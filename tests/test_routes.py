@@ -108,6 +108,25 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["phone_number"], account.phone_number)
         self.assertEqual(new_account["date_joined"], str(account.date_joined))
 
+    def test_read_an_account(self):
+        """It should read an Account"""
+        account = self._create_accounts(1)[0]
+        account_id = account.id
+        response = self.client.get(f"{BASE_URL}/{str(account_id)}", content_type="application/json")
+        returned_account = response.get_json()
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(returned_account["name"], account.name)
+        self.assertEqual(returned_account["email"], account.email)
+        self.assertEqual(returned_account["address"], account.address)
+        self.assertEqual(returned_account["phone_number"], account.phone_number)
+        self.assertEqual(returned_account["date_joined"], str(account.date_joined))
+    
+    def test_get_account_not_found(self):
+        """It should not Read an Account that is not found"""
+        account_id = 10
+        response = self.client.get(f"{BASE_URL}/{account_id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
     def test_bad_request(self):
         """It should not Create an Account when sending the wrong data"""
         response = self.client.post(BASE_URL, json={"name": "not enough data"})
