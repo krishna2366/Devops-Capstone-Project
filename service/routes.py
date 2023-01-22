@@ -56,6 +56,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -71,6 +72,7 @@ def list_accounts():
     account_list = [account.serialize() for account in accounts]
     app.logger.info("Returning [%s] accounts", len(account_list))
     return jsonify(account_list), status.HTTP_200_OK
+
 
 ######################################################################
 # READ AN ACCOUNT
@@ -102,27 +104,18 @@ def update_account(id=None):
     print(account)
     for key in new_attributes:
         account[key] = new_attributes[key]
-    #account.u
     print(account)
     account_object.deserialize(account)
     account_object.update()
     return make_response(
         jsonify(account), status.HTTP_200_OK
     )
-# app.logger.info("Request to create an Account")
-#     account = Account()
-#     account.deserialize(request.get_json())
-#     account.create()
-#     message = account.serialize()
-#     location_url = url_for("read_account", id=account.id, _external=True)
-#     return make_response(
-#         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-#     )
+
+
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
 @app.route("/accounts/<id>", methods=["DELETE"])
 def delete_account(id=None):
     account = Account.find(id)
@@ -132,10 +125,10 @@ def delete_account(id=None):
         "", status.HTTP_204_NO_CONTENT
     )
 
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
