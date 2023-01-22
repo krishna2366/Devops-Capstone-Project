@@ -29,7 +29,7 @@ def index():
         jsonify(
             name="Account REST API Service",
             version="1.0",
-            # paths=url_for("list_accounts", _external=True),
+            paths=url_for("list_accounts", _external=True),
         ),
         status.HTTP_200_OK,
     )
@@ -38,6 +38,7 @@ def index():
 ######################################################################
 # CREATE A NEW ACCOUNT
 ######################################################################
+
 @app.route("/accounts", methods=["POST"])
 def create_accounts():
     """
@@ -59,14 +60,22 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
-# ... place you code here to LIST accounts ...
-
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """
+    List all Accounts
+    This endpoint will list all Accounts
+    """
+    app.logger.info("Request to list Accounts")
+    accounts = Account.all()
+    account_list = [account.serialize() for account in accounts]
+    app.logger.info("Returning [%s] accounts", len(account_list))
+    return jsonify(account_list), status.HTTP_200_OK
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
 
-# ... place you code here to READ an account ...
 @app.route("/accounts/<id>", methods=["GET"])
 def read_account(id=None):
     account = Account.find(id)
@@ -82,20 +91,23 @@ def read_account(id=None):
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
 @app.route("/accounts/<id>", methods=["PUT"])
 def update_account(id=None):
     app.logger.info("Request to update an Account")
-    account = Account.find(id)
-    if not (account and str(account.id) == str(id)):
+    account_object = Account.find(id)
+    if not (account_object and str(account_object.serialize()['id'] == str(id))):
         abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
+    account = account_object.serialize()
     new_attributes = request.get_json()
+    print(account)
     for key in new_attributes:
         account[key] = new_attributes[key]
     #account.u
     print(account)
+    account_object.deserialize(account)
+    account_object.update()
     return make_response(
-        "", status.HTTP_200_OK
+        jsonify(account), status.HTTP_200_OK
     )
 # app.logger.info("Request to create an Account")
 #     account = Account()

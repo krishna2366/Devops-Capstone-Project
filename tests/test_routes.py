@@ -171,9 +171,11 @@ class TestAccountService(TestCase):
         created_account = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name}, content_type="application/json")
-        updated_account = update_response.get_json()
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
         # Check the data is correct
+        print(created_account['id'])
+        update_response = self.client.get(f"{BASE_URL}/{str(created_account['id'])}")
+        updated_account = update_response.get_json()
         self.assertEqual(updated_account["name"], test_name)
         updated_account = self.client.delete(f"{BASE_URL}/{account.id}")
 
@@ -183,3 +185,16 @@ class TestAccountService(TestCase):
         account_id = 0
         response = self.client.put(f"{BASE_URL}/{str(account_id)}", json={"name": "name"}, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_account_list(self):
+        """It should Get a list of Accounts"""
+        self._create_accounts(5)
+        resp = self.client.get(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method call"""
+        resp = self.client.delete(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
