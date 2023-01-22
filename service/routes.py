@@ -71,7 +71,7 @@ def create_accounts():
 def read_account(id=None):
     account = Account.find(id)
     if not (account and str(account.id) == str(id)):
-        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
     response_message = account.serialize()
     return make_response(
         jsonify(response_message), status.HTTP_200_OK
@@ -83,14 +83,42 @@ def read_account(id=None):
 ######################################################################
 
 # ... place you code here to UPDATE an account ...
-
-
+@app.route("/accounts/<id>", methods=["PUT"])
+def update_account(id=None):
+    app.logger.info("Request to update an Account")
+    account = Account.find(id)
+    if not (account and str(account.id) == str(id)):
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
+    new_attributes = request.get_json()
+    for key in new_attributes:
+        account[key] = new_attributes[key]
+    #account.u
+    print(account)
+    return make_response(
+        "", status.HTTP_200_OK
+    )
+# app.logger.info("Request to create an Account")
+#     account = Account()
+#     account.deserialize(request.get_json())
+#     account.create()
+#     message = account.serialize()
+#     location_url = url_for("read_account", id=account.id, _external=True)
+#     return make_response(
+#         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+#     )
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
 
 # ... place you code here to DELETE an account ...
-
+@app.route("/accounts/<id>", methods=["DELETE"])
+def delete_account(id=None):
+    account = Account.find(id)
+    if not (account and str(account.id) == str(id)):
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
+    return make_response(
+        "", status.HTTP_204_NO_CONTENT
+    )
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
