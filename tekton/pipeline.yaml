@@ -83,7 +83,7 @@ spec:
     - name: deploy
       workspaces:
         - name: manifest-dir
-          workspace: openshift-client 
+          workspace: pipeline-workspace
       taskRef:
         name: openshift-client
         kind: ClusterTask
@@ -94,7 +94,7 @@ spec:
           sed -i "s|IMAGE_NAME_HERE|$(params.build-image)|g" deploy/deployment.yaml
           cat deploy/deployment.yaml
           echo "Deploying to OpenShift..."
-          oc apply -f deploy/
+          oc apply -f deploy/deployment.yaml
           oc get pods -l app=accounts
       runAfter:
         - build
