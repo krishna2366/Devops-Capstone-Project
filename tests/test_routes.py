@@ -174,8 +174,8 @@ class TestAccountService(TestCase):
         )
         created_account = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name}, 
-                                            content_type="application/json")
+        update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name},
+                            content_type="application/json")
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
         # Check the data is correct
         print(created_account['id'])

@@ -82,7 +82,7 @@ spec:
     - name: args
       description: The arguments to pass to the flake8 CLI.
       type: array
-      default: []
+      default: ["--count","--max-complexity=10","--max-line-length=127","--statistics"]
   steps:
     - name: flake8
       image: $(params.image)
