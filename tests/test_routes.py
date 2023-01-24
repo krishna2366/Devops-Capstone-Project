@@ -4,6 +4,8 @@ Account API Service Test Suite
 Test cases can be run with the following:
   nosetests -v --with-spec --spec-color
   coverage report -m
+
+This is a test comment
 """
 import os
 import logging
@@ -173,7 +175,7 @@ class TestAccountService(TestCase):
         created_account = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name}, 
-                            content_type="application/json")
+                                            content_type="application/json")
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
         # Check the data is correct
         print(created_account['id'])
@@ -220,4 +222,3 @@ class TestAccountService(TestCase):
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), "*")
-
