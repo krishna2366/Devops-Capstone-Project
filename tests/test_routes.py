@@ -20,10 +20,11 @@ DATABASE_URI = os.getenv(
 
 BASE_URL = "/accounts"
 HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
-
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
+
 class TestAccountService(TestCase):
     """Account Service Tests"""
 
@@ -116,19 +117,19 @@ class TestAccountService(TestCase):
         account_id = account.id
         response = self.client.get(f"{BASE_URL}/{str(account_id)}", content_type="application/json")
         returned_account = response.get_json()
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(returned_account["name"], account.name)
         self.assertEqual(returned_account["email"], account.email)
         self.assertEqual(returned_account["address"], account.address)
         self.assertEqual(returned_account["phone_number"], account.phone_number)
         self.assertEqual(returned_account["date_joined"], str(account.date_joined))
-    
+
     def test_get_account_not_found(self):
         """It should not Read an Account that is not found"""
         account_id = 0
         response = self.client.get(f"{BASE_URL}/{str(account_id)}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_bad_request(self):
         """It should not Create an Account when sending the wrong data"""
         response = self.client.post(BASE_URL, json={"name": "not enough data"})
@@ -151,19 +152,18 @@ class TestAccountService(TestCase):
         account = self._create_accounts(1)[0]
         account_id = account.id
         response = self.client.delete(f"{BASE_URL}/{str(account_id)}")
-        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
-      
-    
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     def test_delete_account_not_working(self):
         """It should not Delete an Account that is not found"""
         account_id = 0
         response = self.client.delete(f"{BASE_URL}/{str(account_id)}")
         print(response)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_update_account(self):
         """It should Update an Account"""
-        test_name="test name"
+        test_name = "test name"
         account = AccountFactory()
         response = self.client.post(
             BASE_URL,
@@ -172,7 +172,8 @@ class TestAccountService(TestCase):
         )
         created_account = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name}, content_type="application/json")
+        update_response = self.client.put(f"{BASE_URL}/{created_account['id']}", json={"name": test_name}, 
+                            content_type="application/json")
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
         # Check the data is correct
         print(created_account['id'])
@@ -181,7 +182,6 @@ class TestAccountService(TestCase):
         self.assertEqual(updated_account["name"], test_name)
         updated_account = self.client.delete(f"{BASE_URL}/{account.id}")
 
-    
     def test_update_account_not_working(self):
         """It should not Update an Account when sending insufficient data"""
         account_id = 0
@@ -201,7 +201,6 @@ class TestAccountService(TestCase):
         resp = self.client.delete(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-
     def test_security_headers(self):
         """It should return security headers"""
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
@@ -216,10 +215,9 @@ class TestAccountService(TestCase):
         for key, value in headers.items():
             self.assertEqual(response.headers.get(key), value)
 
-
     def test_cors_policy(self):
         """It should return Access-Contril-Allow-Origin header"""
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers.get("Access-Control-Allow-Origin"), "*")
-        
+
